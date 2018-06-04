@@ -3,38 +3,48 @@
 {% block body_id 'blog_index' %}
 
 {% block main %}
-    {% for category in categories %}
-        <a href="{{ path('blog_index', {category: category.nom}) }}" >
-            {{ category.nom }}
-        </a>
-    {% endfor %}
+    <div class="row">
+        <ul class="nav navbar-nav">
+            <li><a href="{{ path('blog_index') }}">All</a></li>
+            {% for category in categories %}
+                <li>
+                    <a href="{{ path('blog_index_category', {category: category.nom}) }}" >
+                        {{ category.nom }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        {% for post in posts %}
+            <article class="post">
+                <h2>
+                    <a href="{{ path('blog_post', {slug: post.slug}) }}">
+                        {{ post.title }}
+                    </a>
+                </h2>
 
-    {% for post in posts %}
-        <article class="post">
-            <h2>
-                <a href="{{ path('blog_post', {slug: post.slug}) }}">
-                    {{ post.title }}
-                </a>
-            </h2>
+                <p class="post-metadata">
+                    <span class="metadata"><i class="fa fa-calendar"></i> {{ post.publishedAt|localizeddate('long', 'medium', null, 'UTC') }}</span>
+                    <span class="metadata"><i class="fa fa-user"></i> {{ post.author.fullName }}</span>
+                </p>
+                {% if post.image != null %}
+                    <img style="max-width: 180px;" src="{{ vich_uploader_asset(post, 'imageFile', 'App\\Entity\\Post')  }}"/>
+                {% endif %}
+                {{ post.summary|md2html }}
 
-            <p class="post-metadata">
-                <span class="metadata"><i class="fa fa-calendar"></i> {{ post.publishedAt|localizeddate('long', 'medium', null, 'UTC') }}</span>
-                <span class="metadata"><i class="fa fa-user"></i> {{ post.author.fullName }}</span>
-            </p>
+                {{ include('blog/_post_tags.html.twig') }}
+            </article>
+        {% else %}
+            <div class="well">{{ 'post.no_posts_found'|trans }}</div>
+        {% endfor %}
 
-            {{ post.summary|md2html }}
-
-            {{ include('blog/_post_tags.html.twig') }}
-        </article>
-    {% else %}
-        <div class="well">{{ 'post.no_posts_found'|trans }}</div>
-    {% endfor %}
-
-    {% if posts.haveToPaginate %}
-        <div class="navigation text-center">
-            {{ pagerfanta(posts, 'twitter_bootstrap3_translated', {routeName: 'blog_index_paginated'}) }}
-        </div>
-    {% endif %}
+        {% if posts.haveToPaginate %}
+            <div class="navigation text-center">
+                {{ pagerfanta(posts, 'twitter_bootstrap3_translated', {routeName: 'blog_index_paginated'}) }}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block sidebar %}

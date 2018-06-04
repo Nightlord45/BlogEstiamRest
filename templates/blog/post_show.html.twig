@@ -9,7 +9,7 @@
         <span class="metadata"><i class="fa fa-calendar"></i> {{ post.publishedAt|localizeddate('long', 'medium', null, 'UTC') }}</span>
         <span class="metadata"><i class="fa fa-user"></i> {{ post.author.fullName }}</span>
     </p>
-
+    <img src="{{ vich_uploader_asset(post, 'imageFile') }}">
     {{ post.content|md2html }}
 
     {{ include('blog/_post_tags.html.twig') }}

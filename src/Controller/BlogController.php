@@ -23,6 +23,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,10 +33,8 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Controller used to manage blog contents in the public part of the site.
  *
- * @Route("/blog")
+ * @Route("/")
  *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
 class BlogController extends AbstractController
 {
@@ -60,6 +59,35 @@ class BlogController extends AbstractController
         // See https://symfony.com/doc/current/templating.html#template-suffix
         return $this->render('blog/index.'.$_format.'.twig', ['posts' => $latestPosts, 'categories' => $category]);
     }
+
+
+    /**
+     * @Route("category/{category}",defaults={"page": "1", "_format"="html"}, name="blog_index_category")
+     */
+    public function indexCategory(int $page, string $_format, PostRepository $posts, String $category): Response
+    {
+        $latestPosts = $posts->findByCategory($category,$page);
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+        return $this->render('blog/index.'.$_format.'.twig', ['posts' => $latestPosts, 'categories' => $categories]);
+    }
+
+    /**
+     * @Route("tag/{tag}", defaults={"page": "1", "_format"="html"}, name="blog_index_tag")
+     * @param int $page
+     * @param string $_format
+     * @param PostRepository $posts
+     * @param String $tag
+     * @return Response
+     */
+    public function indexTag(int $page, string $_format, PostRepository $posts, String $tag): Response
+    {
+        $latestPosts = $posts->findByTag($tag, $page);
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+        return $this->render('blog/index.'.$_format.'.twig', ['posts' => $latestPosts, 'categories' => $categories]);
+    }
+
+
+
 
     /**
      * @Route("/posts/{slug}", name="blog_post")

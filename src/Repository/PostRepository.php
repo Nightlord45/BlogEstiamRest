@@ -48,7 +48,7 @@ class PostRepository extends ServiceEntityRepository
             ')
             ->setParameter('now', new \DateTime())
         ;
-
+    dump($query);
         return $this->createPaginator($query, $page);
     }
 
@@ -61,14 +61,40 @@ class PostRepository extends ServiceEntityRepository
         return $paginator;
     }
 
+    /**
+     * @param string $category
+     * @param int $page
+     * @return Pagerfanta
+     */
     public function findByCategory(string $category, int $page = 1): Pagerfanta{
-        $qb = $this->createQueryBuilder('c')
-            ->where('c.category == :category')
-            ->setParameter('category', $category)
-            ->orderBy('c.publishedAt', 'DESC')
-            ->getQuery();
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('c')
+            ->from('App:Post', 'c')
+            ->join('c.category', 'g')
+            ->where('g.nom = :category')
+            ->andWhere('c.publishedAt <= :now ')
+            ->setParameters(array('category' => $category, 'now' => new \DateTime()))
+            ->orderBy('c.publishedAt', 'DESC');
+        $query = $qb->getQuery();
+        return $this->createPaginator($query,$page);
+    }
 
-        return $this->createPaginator($qb,$page);
+    /**
+     * @param string $tag
+     * @param int $page
+     * @return Pagerfanta
+     */
+    public function findByTag(string $tag, int $page): Pagerfanta{
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('c')
+            ->from('App:Post', 'c')
+            ->join('c.tags', 't')
+            ->where('t.name = :tag')
+            ->andWhere('c.publishedAt <= :now')
+            ->setParameters(array('tag' => $tag, 'now' => new \DateTime()))
+            ->orderBy('c.publishedAt', 'DESC');
+        $query = $qb->getQuery();
+        return $this->createPaginator($query,$page);
     }
 
     /**

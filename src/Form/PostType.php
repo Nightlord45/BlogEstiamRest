@@ -15,11 +15,12 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Form\Type\DateTimePickerType;
 use App\Form\Type\TagsInputType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Hillrange\CKEditor\Form\CKEditorType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class PostType extends AbstractType
@@ -47,9 +48,10 @@ class PostType extends AbstractType
                 'label' => 'label.summary',
             ])
             ->add('content', CKEditorType::class, [
-                'config_name' => 'normal',
+                'config' => array('toolbar' => 'standard'),
             ])
-            ->add('category', CategoryType::class, [
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
                 'required' => true,
             ])
             ->add('publishedAt', DateTimePickerType::class, [

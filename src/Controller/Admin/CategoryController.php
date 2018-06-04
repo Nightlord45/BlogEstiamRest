@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Form\Category1Type;
+use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +21,7 @@ class CategoryController extends Controller
      */
     public function index(CategoryRepository $categoryRepository): Response
     {
-        return $this->render('category/index.html.twig', ['categories' => $categoryRepository->findAll()]);
+        return $this->render('admin/category/index.html.twig', ['categories' => $categoryRepository->findAll()]);
     }
 
     /**
@@ -29,7 +30,7 @@ class CategoryController extends Controller
     public function new(Request $request): Response
     {
         $category = new Category();
-        $form = $this->createForm(Category1Type::class, $category);
+        $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -59,7 +60,7 @@ class CategoryController extends Controller
      */
     public function edit(Request $request, Category $category): Response
     {
-        $form = $this->createForm(Category1Type::class, $category);
+        $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -1,8 +1,7 @@
-Symfony Demo Application
+BlogEstiam Application
 ========================
 
-The "Symfony Demo Application" is a reference application created to show how
-to develop Symfony applications following the recommended best practices.
+The "BlogEstiam Application" is based on "Symfony Demo Application".
 
 Requirements
 ------------
