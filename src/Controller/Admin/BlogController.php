@@ -35,23 +35,12 @@ use Symfony\Component\Routing\Annotation\Route;
  * @Route("/admin/post")
  * @Security("has_role('ROLE_ADMIN')")
  *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
 class BlogController extends AbstractController
 {
     /**
      * Lists all Post entities.
      *
-     * This controller responds to two different routes with the same URL:
-     *   * 'admin_post_index' is the route with a name that follows the same
-     *     structure as the rest of the controllers of this class.
-     *   * 'admin_index' is a nice shortcut to the backend homepage. This allows
-     *     to create simpler links in the templates. Moreover, in the future we
-     *     could move this annotation to any other controller while maintaining
-     *     the route name and therefore, without breaking any existing link.
-     *
-     * @Route("/", name="admin_index")
      * @Route("/", name="admin_post_index")
      * @Method("GET")
      */
@@ -68,9 +57,6 @@ class BlogController extends AbstractController
      * @Route("/new", name="admin_post_new")
      * @Method({"GET", "POST"})
      *
-     * NOTE: the Method annotation is optional, but it's a recommended practice
-     * to constraint the HTTP methods each controller responds to (by default
-     * it responds to all methods).
      */
     public function new(Request $request): Response
     {

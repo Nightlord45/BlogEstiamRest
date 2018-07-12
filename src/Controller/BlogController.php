@@ -16,19 +16,21 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Events;
 use App\Form\CommentType;
-use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
+use PhpParser\Node\Expr\Array_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
+use FOS\RestBundle\Controller\Annotations as Rest;
 
 /**
  * Controller used to manage blog contents in the public part of the site.
@@ -54,11 +56,9 @@ class BlogController extends AbstractController
         $latestPosts = $posts->findLatest($page);
         $category = $this->getDoctrine()->getRepository(Category::class)->findAll();
 
-        // Every template name also has two extensions that specify the format and
-        // engine for that template.
-        // See https://symfony.com/doc/current/templating.html#template-suffix
         return $this->render('blog/index.'.$_format.'.twig', ['posts' => $latestPosts, 'categories' => $category]);
     }
+
 
 
     /**
@@ -100,13 +100,6 @@ class BlogController extends AbstractController
      */
     public function postShow(Post $post): Response
     {
-        // Symfony's 'dump()' function is an improved version of PHP's 'var_dump()' but
-        // it's not available in the 'prod' environment to prevent leaking sensitive information.
-        // It can be used both in PHP files and Twig templates, but it requires to
-        // have enabled the DebugBundle. Uncomment the following line to see it in action:
-        //
-        // dump($post, $this->getUser(), new \DateTime());
-
         return $this->render('blog/post_show.html.twig', ['post' => $post]);
     }
 
@@ -202,4 +195,29 @@ class BlogController extends AbstractController
 
         return $this->json($results);
     }
+
+    /**
+     * @Rest\View()
+     * @Rest\Get("/api/index", defaults={"page": "1", "_format"="json"})
+     */
+    public function indexApi(int $page): array
+    {
+        $latestPosts = $this->getDoctrine()->getRepository(Post::class)->findLatestRest($page);
+        //dump($latestPosts);
+        return $latestPosts;
+
+       // return new JsonResponse(['message' => $latestPosts], Response::HTTP_ACCEPTED);
+    }
+
+    /**
+     * @Rest\View()
+     * @Rest\Get("/api/category", defaults={"_format"="json"})
+     */
+    public function getCategory(): array
+    {
+        $category = $this->getDoctrine()->getRepository(Category::class)->findAll();
+        return $category;
+
+    }
+
 }

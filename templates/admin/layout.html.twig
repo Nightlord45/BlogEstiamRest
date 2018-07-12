@@ -29,3 +29,29 @@
         </a>
     </li>
 {% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div id="main" class="col-sm-9">
+            {{ include('default/_flash_messages.html.twig') }}
+
+            {% block main %}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <a href="{{ path('admin_post_index') }}" >Gestion des actualitées</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <a href="{{ path('category_index') }}" >Gestion des catégories</a>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+
+        <div id="sidebar" class="col-sm-3">
+            {% block sidebar %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

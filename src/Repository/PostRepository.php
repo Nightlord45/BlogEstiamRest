@@ -13,6 +13,7 @@ namespace App\Repository;
 
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
@@ -51,6 +52,23 @@ class PostRepository extends ServiceEntityRepository
     dump($query);
         return $this->createPaginator($query, $page);
     }
+
+    public function findLatestRest(int $page):array
+    {
+        $query = $this->getEntityManager()
+            ->createQuery('
+                SELECT p, a, t
+                FROM App:Post p
+                JOIN p.author a
+                LEFT JOIN p.tags t
+                WHERE p.publishedAt <= :now
+                ORDER BY p.publishedAt DESC
+            ')
+            ->setParameter('now', new \DateTime());
+        return $query->getResult();
+    }
+
+
 
     private function createPaginator(Query $query, int $page): Pagerfanta
     {
